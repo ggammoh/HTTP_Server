@@ -1,5 +1,6 @@
 #include "server.h"
 #include "HTTP_Request.h"
+#include "HTTP_Response.h"
 
 /**
  * Sets up a TCP server according to the provided configuration
@@ -102,15 +103,14 @@ int handle_connection(struct server_config *config, int client_fd) {
     if (parsed_request.method == INVALID ) {
         const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
         send(client_fd, bad, strlen(bad), 0);
-    } else {
-        char response[1024];
-        snprintf(response, sizeof(response),
-                 "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 13\r\n\r\n<h1>Hello!</h1>");
-        int bytes_sent = send(client_fd, response, strlen(response), 0);
-        if (bytes_sent == -1) {
-            perror("send");
-            return -1;
-        }
+    } else{
+        struct http_response resp = process_response(parsed_request);
+        char full_response[2048];
+        snprintf(full_response, sizeof(full_response),
+                 "HTTP/1.1 %d %s\r\n%s\r\n%s",
+                 resp.status_code, resp.status_message, resp.headers, resp.body);
+        send(client_fd, full_response, strlen(full_response), 0);
+        free_http_response(&resp);
     }
     
     close(client_fd);

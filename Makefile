@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 INCLUDE = -Iinclude
-SRC = src/main.c src/server.c src/HTTP_Request.c
+SRC = src/main.c src/server.c src/HTTP_Request.c src/HTTP_Response.c
 OBJ = $(SRC:.c=.o)
 TARGET = server
 
