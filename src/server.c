@@ -84,7 +84,6 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
  * @return 0 on success, -1 on failure
  */
 int handle_connection(struct server_config *config, int client_fd) {
-    // TODO: Implement
     char buf[2048];
     int numbytes;
 
@@ -95,7 +94,6 @@ int handle_connection(struct server_config *config, int client_fd) {
     }
 
     buf[numbytes] = '\0';
-    printf("Received request: %s\n", buf);
 
     // Parse the request
     struct http_request parsed_request = parse_request(buf);
@@ -107,9 +105,10 @@ int handle_connection(struct server_config *config, int client_fd) {
         struct http_response resp = process_response(parsed_request);
         char full_response[2048];
         snprintf(full_response, sizeof(full_response),
-                 "HTTP/1.1 %d %s\r\n%s\r\n%s",
+                 "HTTP/1.1 %d %s\r\n%s\r\n%s\r\n\r\n",
                  resp.status_code, resp.status_message, resp.headers, resp.body);
         send(client_fd, full_response, strlen(full_response), 0);
+        printf("\nDEBUG: Response sent: %s\n", full_response);
         free_http_response(&resp);
     }
     

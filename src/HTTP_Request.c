@@ -90,15 +90,15 @@ struct http_request parse_request(const char *request) {
     free(request_copy);
     
     // Debug output with correct format specifiers
-    printf("Method: %d\n", parsed_request.method);
+    printf("DEBUG: Method: %d\n", parsed_request.method);
     if (parsed_request.URI) {
-        printf("URI: %s\n", parsed_request.URI);
+        printf("DEBUG: URI: %s\n", parsed_request.URI);
     } else {
-        printf("URI: (null)\n");
+        printf("DEBUG: URI: (null)\n");
     }
-    printf("Version: %f\n", parsed_request.version);
-    printf("Headers: %s\n", parsed_request.headers);
-    printf("Body: %s\n", parsed_request.body);
+    printf("DEBUG: Version: %f\n", parsed_request.version);
+    printf("DEBUG: Headers: %s\n", parsed_request.headers);
+    printf("DEBUG: Body: %s\n", parsed_request.body);
     
     return parsed_request;
 }
