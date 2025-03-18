@@ -126,7 +126,6 @@ char *read_request(int client_fd) {
     }
 
     buf[total_bytes] = '\0';
-    printf("Request read\n");
     return buf;
 }
 
@@ -148,7 +147,6 @@ int handle_connection(struct server_config *config, int client_fd) {
     }
 
     // Parse the request
-    printf("Parsing request\n");
     struct http_request parsed_request = parse_request(request);
 
     if (parsed_request.method == INVALID ) {
