@@ -103,12 +103,25 @@ int handle_connection(struct server_config *config, int client_fd) {
         send(client_fd, bad, strlen(bad), 0);
     } else{
         struct http_response resp = process_response(parsed_request);
-        char full_response[2048];
-        snprintf(full_response, sizeof(full_response),
-                 "HTTP/1.1 %d %s\r\n%s\r\n%s\r\n\r\n",
-                 resp.status_code, resp.status_message, resp.headers, resp.body);
-        send(client_fd, full_response, strlen(full_response), 0);
-        printf("\nDEBUG: Response sent: %s\n", full_response);
+        
+        // Send HTTP headers first
+        char headers[1024];
+        snprintf(headers, sizeof(headers),
+                 "HTTP/1.1 %d %s\r\n%s\r\n\r\n",
+                 resp.status_code, resp.status_message, resp.headers);
+        send(client_fd, headers, strlen(headers), 0);
+        
+        // Then send the body separately (handles binary data)
+        if (resp.body) {
+            // Get the file size from the content-length header
+            const char *content_length = strstr(resp.headers, "Content-Length: ");
+            if (content_length) {
+                size_t body_size = (size_t)atoi(content_length + 16); // Skip "Content-Length: "
+                ssize_t sent_bytes = send(client_fd, resp.body, body_size, 0);
+            }
+        }
+        
+        printf("\nDEBUG: Headers sent: %s\n", headers);
         free_http_response(&resp);
     }
     
