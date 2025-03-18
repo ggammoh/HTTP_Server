@@ -75,7 +75,7 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
 
 char *read_request(int client_fd) {
     int max_size = 16384;
-    int initial_size = 16;
+    int initial_size = 2048;
     char *buf = malloc(initial_size);
     if (!buf) {
         perror("malloc");
@@ -87,12 +87,9 @@ char *read_request(int client_fd) {
     int numbytes;
     int total_bytes = 0;
 
-    printf("Reading request\n");
 
     while (1) {
         numbytes = recv(client_fd, buf + total_bytes, initial_size - total_bytes, 0);
-        printf("Chunk %d\n", count);
-        printf("Read %d bytes\n", numbytes);
         if (numbytes == -1) {
             perror("recv");
             free(buf);
@@ -109,7 +106,9 @@ char *read_request(int client_fd) {
             return NULL;
         }
         if (total_bytes >= initial_size) {
+            printf("Chunk %d\n", count);
             initial_size *= 2;
+            printf("Reallocating buffer to %d bytes\n", initial_size);
             char *new_buf = realloc(buf, initial_size);
             if (!new_buf) {
                 perror("realloc");
@@ -120,7 +119,6 @@ char *read_request(int client_fd) {
             printf("Total bytes: %d\n", total_bytes);
         }
         else{
-            printf("No more reallocations needed\n");
             break;
         }
         
