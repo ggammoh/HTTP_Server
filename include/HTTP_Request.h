@@ -29,6 +29,7 @@ struct http_request {
 
 int interpret_method(const char *method);
 struct http_request parse_request(const char *request);
+void free_http_request(struct http_request *request);
 
 
 #endif // HTTP_REQUEST_H

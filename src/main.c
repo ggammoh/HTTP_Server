@@ -8,6 +8,7 @@ int main() {
     config.document_root = "public";
     struct sockaddr_storage their_addr;
     socklen_t addr_len = sizeof their_addr;
+    int status = 0;
 
     if (setup_server(&config) != 0) {
         fprintf(stderr, "Failed to initialize server\n");
@@ -25,7 +26,11 @@ int main() {
         printf("Connected to %s\n", inet_ntoa(((struct sockaddr_in *)&their_addr)->sin_addr));
 
         // Handle the client connection
-        handle_connection(&config, client_fd);
+        status = handle_connection(&config, client_fd);
+        if (status == -1) {
+            fprintf(stderr, "Error handling client\n");
+            continue;
+        }
         
         // Close client socket after handling
         close(client_fd);

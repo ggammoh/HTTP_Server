@@ -33,6 +33,9 @@ const char* get_file_extension(const char* path) {
 }
 
 const char* get_content_type(const char *extension) {
+    if (extension == NULL) {
+        return "application/octet-stream";
+    }
     if (extension[0] == '\0') {
         // If no extension is found, default to HTML
         return "text/html";

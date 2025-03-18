@@ -73,6 +73,50 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
     return client_fd;
 }
 
+char *read_request(int client_fd) {
+    int max_size = 16384;
+    int initial_size = 2048;
+    char *buf = malloc(initial_size);
+    if (!buf) {
+        perror("malloc");
+        return NULL;
+    }
+
+    int numbytes;
+    int total_bytes = 0;
+
+    while (1) {
+        numbytes = recv(client_fd, buf + total_bytes, initial_size - total_bytes, 0);
+        if (numbytes == -1) {
+            perror("recv");
+            free(buf);
+            return NULL;
+        }
+        if (numbytes == 0) {
+            break;
+        }
+        total_bytes += numbytes;
+        if (total_bytes >= max_size) {
+            fprintf(stderr, "Request too large\n");
+            free(buf);
+            return NULL;
+        }
+        if (total_bytes >= initial_size) {
+            initial_size *= 2;
+            char *new_buf = realloc(buf, initial_size);
+            if (!new_buf) {
+                perror("realloc");
+                free(buf);
+                return NULL;
+            }
+            buf = new_buf;
+        }
+    }
+
+    buf[total_bytes] = '\0';
+    return buf;
+}
+
 /**
  * Handles a client connection by sending a simple HTML response
  * 
@@ -84,16 +128,17 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
  * @return 0 on success, -1 on failure
  */
 int handle_connection(struct server_config *config, int client_fd) {
-    char buf[2048];
-    int numbytes;
-
-    numbytes = recv(client_fd, buf, sizeof buf, 0);
-    if (numbytes == -1) {
-        perror("recv");
+    char *request = read_request(client_fd);
+    if (!request) {
+        perror("read_request");
         return -1;
     }
 
+    // Parse the request
+    struct http_request parsed_request = parse_request(request);
+
     buf[numbytes] = '\0';
+    char
 
     // Parse the request
     struct http_request parsed_request = parse_request(buf);
@@ -118,11 +163,16 @@ int handle_connection(struct server_config *config, int client_fd) {
             if (content_length) {
                 size_t body_size = (size_t)atoi(content_length + 16); // Skip "Content-Length: "
                 ssize_t sent_bytes = send(client_fd, resp.body, body_size, 0);
+                if (sent_bytes == -1) {
+                    perror("send");
+                    return -1;
+                }
             }
         }
         
         printf("\nDEBUG: Headers sent: %s\n", headers);
         free_http_response(&resp);
+        free_http_request(&parsed_request);
     }
     
     close(client_fd);

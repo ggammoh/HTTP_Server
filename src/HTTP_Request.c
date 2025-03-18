@@ -91,3 +91,14 @@ struct http_request parse_request(const char *request) {
     
     return parsed_request;
 }
+
+void free_http_request(struct http_request *request) {
+    if (request) {
+        free(request->URI);
+        free(request->headers);
+        free(request->body);
+        request->URI = NULL;
+        request->headers = NULL;
+        request->body = NULL;
+    }
+}
