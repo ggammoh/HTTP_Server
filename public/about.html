@@ -3,47 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goobs Server</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        nav {
-            background-color: #333;
-            padding: 10px;
-        }
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        nav ul li {
-            margin: 0 15px;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-        .container {
-            padding: 20px;
-        }
-    </style>
+    <title>About - Goob's Server</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/about.css">
 </head>
 <body>
-    <h1>About</h1>
-    <nav>
-        <ul>
+    <nav class="navbar">
+        <div class="logo">Goob's Server</div>
+        <ul class="nav-links">
             <li><a href="/">Home</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="/about.html" class="active">About</a></li>
+            <li><a href="/under-construction.html">Contact</a></li>
         </ul>
     </nav>
-    <div class="container">
-        <h1>Welcome to Goobs Server</h1>
-        <p>This is a simple HTML page with a navigation bar.</p>
+
+    <div class="learn-more-container">
+        <div class="section-header">
+            <div class="badge">PROJECT OVERVIEW</div>
+            <h1 class="section-title">Learning C by Building an HTTP Server</h1>
+            <p>A journey into low-level programming and network protocols</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="content-section">
+                <h2>Project Purpose</h2>
+                <p>
+                    This HTTP server is a learning project I started to deepen my understanding of the C programming language and network programming. 
+                    By implementing a server from scratch, I've been exploring fundamental concepts like memory management, socket programming, 
+                    and efficient I/O handling that are often abstracted away in higher-level languages.
+                </p>
+                <p>
+                    The project has two main goals:
+                </p>
+                <ul>
+                    <li>To strengthen my C programming skills through practical application</li>
+                    <li>To gain a deeper understanding of how web servers actually work at a low level</li>
+                </ul>
+                
+                <div class="code-block">
+                    <code>
+<span class="comment">/* A simple HTTP server in C */</span><br>
+<span class="keyword">int</span> <span class="function">main</span>() {<br>
+&nbsp;&nbsp;<span class="comment">// Create socket and bind to port 8080</span><br>
+&nbsp;&nbsp;<span class="keyword">int</span> server_fd = socket(AF_INET, SOCK_STREAM, 0);<br>
+&nbsp;&nbsp;<span class="keyword">struct</span> sockaddr_in address;<br>
+&nbsp;&nbsp;address.sin_family = AF_INET;<br>
+&nbsp;&nbsp;address.sin_addr.s_addr = INADDR_ANY;<br>
+&nbsp;&nbsp;address.sin_port = htons(8080);<br>
+<br>
+&nbsp;&nbsp;bind(server_fd, (<span class="keyword">struct</span> sockaddr *)&address, <span class="keyword">sizeof</span>(address));<br>
+&nbsp;&nbsp;listen(server_fd, 10);<br>
+<br>
+&nbsp;&nbsp;<span class="comment">// Accept and handle connections</span><br>
+&nbsp;&nbsp;<span class="keyword">while</span>(1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">handle_connection</span>(server_fd);<br>
+&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;<span class="keyword">return</span> 0;<br>
+}
+                    </code>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2>Current Features</h2>
+                <p>
+                    The server is still under active development, but several key features have already been implemented:
+                </p>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <h3><span class="icon">📁</span> Static File Serving <span class="status status-complete">Complete</span></h3>
+                        <p>Serves HTML, CSS, JavaScript, and image files from the server's public directory.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3><span class="icon">🔄</span> HTTP Request Parsing <span class="status status-complete">Complete</span></h3>
+                        <p>Correctly parses HTTP headers, methods, and paths according to the HTTP/1.1 specification.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3><span class="icon">💾</span> Memory Management <span class="status status-complete">Complete</span></h3>
+                        <p>Careful memory allocation and deallocation to prevent leaks in long-running processes.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3><span class="icon">📊</span> Connection Pooling <span class="status status-in-progress">In Progress</span></h3>
+                        <p>Efficiently handles multiple concurrent connections using a thread pool.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3><span class="icon">🧩</span> Modular Architecture <span class="status status-in-progress">In Progress</span></h3>
+                        <p>Clean separation of concerns for easier maintenance and extensibility.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3><span class="icon">🔒</span> Basic Security <span class="status status-in-progress">In Progress</span></h3>
+                        <p>Input validation and error handling to prevent common security issues.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2>Development Timeline</h2>
+                <p>
+                    This project is an ongoing learning experience. Here's the roadmap of what I've done and what's coming next:
+                </p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 1 (Completed)</div>
+                        <div class="timeline-title">Basic HTTP Server</div>
+                        <div class="timeline-description">
+                            Implemented socket programming, basic request handling, and response generation.
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 2 (Current)</div>
+                        <div class="timeline-title">Performance Optimization</div>
+                        <div class="timeline-description">
+                            Working on concurrency, connection pooling, and efficient resource utilization.
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 3 (Planned)</div>
+                        <div class="timeline-title">Advanced Features</div>
+                        <div class="timeline-description">
+                            Will add support for HTTPS, WebSockets, and more sophisticated routing.
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">Phase 4 (Planned)</div>
+                        <div class="timeline-title">Production Readiness</div>
+                        <div class="timeline-description">
+                            Will focus on reliability, logging, monitoring, and deployment configurations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2>Learning Takeaways</h2>
+                <p>
+                    It has been incredibly cool to make my computer science knowledge more robust. Some key insights gained so far:
+                </p>
+                <ul>
+                    <li>The importance of manual memory management and how to avoid common pitfalls</li>
+                    <li>How the HTTP protocol works at a byte level, not just conceptually</li>
+                    <li>The intricacies of socket programming and network I/O</li>
+                    <li>How to design clean, modular C code for a complex application</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="/" class="btn btn-primary">Return to Home</a>
+        </div>
     </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">Goob's Server</div>
+                    <p>A lightweight HTTP server built for learning and experimentation.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/ggammoh/HTTP_Server" aria-label="GitHub" target="_blank"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/under-construction.html">Documentation</a></li>
+                        <li><a href="/under-construction.html">API Reference</a></li>
+                        <li><a href="/under-construction.html">Examples</a></li>
+                        <li><a href="/under-construction.html">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="/under-construction.html">Blog</a></li>
+                        <li><a href="/under-construction.html">Contact</a></li>
+                        <li><a href="/under-construction.html">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/under-construction.html">Privacy Policy</a></li>
+                        <li><a href="/under-construction.html">Terms of Service</a></li>
+                        <li><a href="/under-construction.html">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Goob's Server. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

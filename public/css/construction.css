@@ -1,0 +1,63 @@
+.construction-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 2rem;
+}
+
+.construction-icon {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.construction-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.construction-message {
+    max-width: 600px;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+    color: #555;
+}
+
+.construction-progress {
+    width: 100%;
+    max-width: 400px;
+    height: 8px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    position: absolute;
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    border-radius: 4px;
+    animation: progress 2s infinite alternate ease-in-out;
+}
+
+@keyframes progress {
+    0% { left: 0; }
+    100% { left: 70%; }
+} 
