@@ -75,24 +75,31 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
 
 char *read_request(int client_fd) {
     int max_size = 16384;
-    int initial_size = 2048;
+    int initial_size = 16;
     char *buf = malloc(initial_size);
     if (!buf) {
         perror("malloc");
         return NULL;
     }
 
+    int count = 0;
+
     int numbytes;
     int total_bytes = 0;
 
+    printf("Reading request\n");
+
     while (1) {
         numbytes = recv(client_fd, buf + total_bytes, initial_size - total_bytes, 0);
+        printf("Chunk %d\n", count);
+        printf("Read %d bytes\n", numbytes);
         if (numbytes == -1) {
             perror("recv");
             free(buf);
             return NULL;
         }
         if (numbytes == 0) {
+            printf("No more data to read\n");
             break;
         }
         total_bytes += numbytes;
@@ -110,10 +117,18 @@ char *read_request(int client_fd) {
                 return NULL;
             }
             buf = new_buf;
+            printf("Total bytes: %d\n", total_bytes);
         }
+        else{
+            printf("No more reallocations needed\n");
+            break;
+        }
+        
+        count++;
     }
 
     buf[total_bytes] = '\0';
+    printf("Request read\n");
     return buf;
 }
 
@@ -135,13 +150,8 @@ int handle_connection(struct server_config *config, int client_fd) {
     }
 
     // Parse the request
+    printf("Parsing request\n");
     struct http_request parsed_request = parse_request(request);
-
-    buf[numbytes] = '\0';
-    char
-
-    // Parse the request
-    struct http_request parsed_request = parse_request(buf);
 
     if (parsed_request.method == INVALID ) {
         const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
