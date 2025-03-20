@@ -49,8 +49,7 @@ struct http_request parse_request(const char *request) {
     char *headers = request_copy;
     char *body = headers_body_split + 4;  // Move past "\r\n\r\n"
     
-    // Store a copy of headers and body if needed
-    parsed_request.headers = strdup(headers);
+    // Store a copy of body if needed
     if (strlen(body) > 0) {
         parsed_request.body = strdup(body);
     }
@@ -64,6 +63,7 @@ struct http_request parse_request(const char *request) {
     
     *end_of_first_line = '\0';  // Terminate first line
     char *request_line = headers;
+    headers = end_of_first_line + 2;
     
     // Parse first line: METHOD URI HTTP/VERSION
     char *method_str = strtok(request_line, " ");
@@ -85,12 +85,46 @@ struct http_request parse_request(const char *request) {
     if (strncmp(version_str, "HTTP/", 5) == 0) {
         parsed_request.version = atof(version_str + 5);
     }
+
+    // Parse headers
+    int init_size = 20;
+    parsed_request.headers = malloc(init_size * sizeof(struct http_header));
+    char *header_line = strtok(headers, "\r\n");
+    while (header_line){
+        char *colon = strchr(header_line, ':');
+        if (colon) {
+            *colon = '\0';
+            char *key = strdup(header_line);
+            char *value = strdup(colon + 1);
+            while (*value == ' ') {
+                value++;
+            }
+            parsed_request.headers[parsed_request.header_count].key = key;
+            parsed_request.headers[parsed_request.header_count].value = value;
+            parsed_request.header_count++;
+        }
+        header_line = strtok(NULL, "\r\n");
+        if (parsed_request.header_count >= init_size){
+            init_size += 10;
+            struct http_header *new_headers = realloc(parsed_request.headers, init_size * sizeof(struct http_header));
+            parsed_request.headers = new_headers;
+        }
+    }
+
+    for (int i = 0; i < parsed_request.header_count; i++){
+        if (strcmp(parsed_request.headers[i].key, "Connection") == 0 && strcmp(parsed_request.headers[i].value, "keep-alive") == 0){
+            parsed_request.keep_alive = 1;
+            printf("Found keep-alive connection\n");
+            break;
+        }
+    }
     
     // Free the temporary copy
     free(request_copy);
     
     return parsed_request;
 }
+
 
 void free_http_request(struct http_request *request) {
     if (request) {

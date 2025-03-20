@@ -1,6 +1,7 @@
 #include "server.h"
 #include "HTTP_Request.h"
 #include "HTTP_Response.h"
+#include <sys/select.h>
 
 /**
  * Sets up a TCP server according to the provided configuration
@@ -96,7 +97,10 @@ char *read_request(int client_fd) {
             return NULL;
         }
         if (numbytes == 0) {
-            printf("No more data to read\n");
+            if (total_bytes == 0){
+                printf("Empty Request\n");
+                break;
+            }
             break;
         }
         total_bytes += numbytes;
@@ -119,6 +123,7 @@ char *read_request(int client_fd) {
             printf("Total bytes: %d\n", total_bytes);
         }
         else{
+            printf("DEBUG: Read entire request\n");
             break;
         }
         
@@ -140,47 +145,76 @@ char *read_request(int client_fd) {
  * @return 0 on success, -1 on failure
  */
 int handle_connection(struct server_config *config, int client_fd) {
-    char *request = read_request(client_fd);
-    if (!request) {
-        perror("read_request");
-        return -1;
-    }
+    int keep_alive = 0;
+    do {
+        fd_set readfds;
+        struct timeval timeout = { .tv_sec = 15, .tv_usec = 0 };
+        FD_ZERO(&readfds);
+        FD_SET(client_fd, &readfds);
+        int ready = select(client_fd + 1, &readfds, NULL, NULL, &timeout);
 
-    // Parse the request
-    struct http_request parsed_request = parse_request(request);
+        if (ready == -1) {
+            perror("select");
+            printf("Select error");
+            break; // Error, exit loop
+        }
+        if (ready == 0) {
+            printf("Timeout: No data received in 15 seconds\n");
+            break; // Timeout, exit loop
+        }
 
-    if (parsed_request.method == INVALID ) {
-        const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
-        send(client_fd, bad, strlen(bad), 0);
-    } else{
-        struct http_response resp = process_response(parsed_request);
-        
-        // Send HTTP headers first
-        char headers[1024];
-        snprintf(headers, sizeof(headers),
-                 "HTTP/1.1 %d %s\r\n%s\r\n\r\n",
-                 resp.status_code, resp.status_message, resp.headers);
-        send(client_fd, headers, strlen(headers), 0);
-        
-        // Then send the body separately (handles binary data)
-        if (resp.body) {
-            // Get the file size from the content-length header
-            const char *content_length = strstr(resp.headers, "Content-Length: ");
-            if (content_length) {
-                size_t body_size = (size_t)atoi(content_length + 16); // Skip "Content-Length: "
-                ssize_t sent_bytes = send(client_fd, resp.body, body_size, 0);
-                if (sent_bytes == -1) {
-                    perror("send");
-                    return -1;
+        // Read request
+        char *request = read_request(client_fd);
+        if (!request) {
+            perror("read_request");
+            printf("failed to read request\n");
+            return -1;
+        }
+        // If the request was empty (Most likely a TCP FIN packet) close the connection.
+        if (request[0] == '\0'){
+            printf("Empty request\n");
+            break;
+        }
+
+        printf("Recived request\n");
+
+        // Parse the request
+        struct http_request parsed_request = parse_request(request);
+
+        if (parsed_request.method == INVALID ) {
+            const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
+            send(client_fd, bad, strlen(bad), 0);
+        } else{
+            struct http_response resp = process_response(parsed_request);
+            
+            // Send HTTP headers first
+            char headers[1024];
+            snprintf(headers, sizeof(headers),
+                    "HTTP/1.1 %d %s\r\n%s%s\r\n",
+                    resp.status_code, resp.status_message, resp.headers, parsed_request.keep_alive ? "Connection: keep-alive\r\n" : "");
+            send(client_fd, headers, strlen(headers), 0);
+            
+            // Then send the body separately (handles binary data)
+            if (resp.body) {
+                // Get the file size from the content-length header
+                const char *content_length = strstr(resp.headers, "Content-Length: ");
+                if (content_length) {
+                    size_t body_size = (size_t)atoi(content_length + 16); // Skip "Content-Length: "
+                    ssize_t sent_bytes = send(client_fd, resp.body, body_size, 0);
+                    if (sent_bytes == -1) {
+                        perror("send");
+                        return -1;
+                    }
                 }
             }
+            
+            printf("\nDEBUG: Headers sent: %s\n", headers);
+            keep_alive = parsed_request.keep_alive;
+            free_http_response(&resp);
+            free_http_request(&parsed_request);
+            free(request);
         }
-        
-        printf("\nDEBUG: Headers sent: %s\n", headers);
-        free_http_response(&resp);
-        free_http_request(&parsed_request);
-    }
-    
+    } while (keep_alive != 0);
     close(client_fd);
     printf("Connection closed\n");
     

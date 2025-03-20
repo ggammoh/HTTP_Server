@@ -14,8 +14,8 @@ enum http_method {
     INVALID = -1
 };
 
-struct http_headers {
-    char *name;
+struct http_header {
+    char *key;
     char *value;
 };
 
@@ -23,7 +23,9 @@ struct http_request {
     int method;
     char *URI;
     float version;
-    char *headers;
+    struct http_header *headers;
+    int header_count;
+    int keep_alive;
     char *body;
 };
 
