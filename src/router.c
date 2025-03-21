@@ -55,20 +55,22 @@ const char* get_content_type(const char *extension) {
     }
     return "application/octet-stream";
 }
-struct http_response server_file(const char *uri) {
+struct http_response server_file(const char *uri, char *document_root) {
     struct http_response resp = { .status_code = 500, .status_message = NULL, .headers = NULL, .body = NULL };
 
     char path[100];
     const char* extension = get_file_extension(uri);
+    // printf("DEBUG uri: %s", uri);
+    // printf("\nDEBUG root: %s", document_root);
     if (strcmp(uri, "/") == 0) {
-        strcpy(path, "public/index.html");
+        snprintf(path, sizeof(path), "%s/index.html", document_root);
     } else {
         if (extension[0] == '\0') {
             // No extension, try to serve as HTML
-            snprintf(path, sizeof(path), "public%s.html", uri);
+            snprintf(path, sizeof(path), "%s%s.html", document_root, uri);
         } else {
             // Has extension, use as is
-            snprintf(path, sizeof(path), "public%s", uri);
+            snprintf(path, sizeof(path), "%s%s", document_root, uri);
         }
     }
 

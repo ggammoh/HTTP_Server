@@ -7,11 +7,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-struct http_response process_response(struct http_request request) {
+struct http_response process_response(struct http_request request, char *document_root) {
     struct http_response resp = { .status_code = 500, .status_message = NULL, .headers = NULL, .body = NULL };
 
     if (request.method == GET) {
-        resp = server_file(request.URI);
+        resp = server_file(request.URI, document_root);
 
     } else if (request.method == POST) {
         resp.status_code = 200;

@@ -89,14 +89,19 @@
                     </div>
                     
                     <div class="feature-item">
-                        <h3><span class="icon">📊</span> Connection Pooling <span class="status status-in-progress">In Progress</span></h3>
+                        <h3><span class="icon">📊</span> Connection Pooling <span class="status status-complete">Complete</span></h3>
                         <p>Efficiently handles multiple concurrent connections using a thread pool.</p>
                     </div>
                     
                     <div class="feature-item">
+                        <h3><span class="icon">🔁</span> Keep Alive Connections <span class="status status-complete">Complete</span></h3>
+                        <p>Supports persistent connections to reduce overhead of establishing new TCP connections.</p>
+                    </div>
+                    
+                    <!-- <div class="feature-item">
                         <h3><span class="icon">🧩</span> Modular Architecture <span class="status status-in-progress">In Progress</span></h3>
                         <p>Clean separation of concerns for easier maintenance and extensibility.</p>
-                    </div>
+                    </div> -->
                     
                     <div class="feature-item">
                         <h3><span class="icon">🔒</span> Basic Security <span class="status status-in-progress">In Progress</span></h3>
@@ -121,15 +126,15 @@
                     </div>
                     
                     <div class="timeline-item">
-                        <div class="timeline-date">Phase 2 (Current)</div>
+                        <div class="timeline-date">Phase 2 (Completed)</div>
                         <div class="timeline-title">Performance Optimization</div>
                         <div class="timeline-description">
-                            Working on concurrency, connection pooling, and efficient resource utilization.
+                            Implemented concurrency, connection pooling, and keep-alive connections for efficient resource utilization.
                         </div>
                     </div>
                     
                     <div class="timeline-item">
-                        <div class="timeline-date">Phase 3 (Planned)</div>
+                        <div class="timeline-date">Phase 3 (TBD)</div>
                         <div class="timeline-title">Advanced Features</div>
                         <div class="timeline-description">
                             Will add support for HTTPS, WebSockets, and more sophisticated routing.
@@ -137,7 +142,7 @@
                     </div>
                     
                     <div class="timeline-item">
-                        <div class="timeline-date">Phase 4 (Planned)</div>
+                        <div class="timeline-date">Phase 4 (TBD)</div>
                         <div class="timeline-title">Production Readiness</div>
                         <div class="timeline-description">
                             Will focus on reliability, logging, monitoring, and deployment configurations.
@@ -152,10 +157,11 @@
                     It has been incredibly cool to make my computer science knowledge more robust. Some key insights gained so far:
                 </p>
                 <ul>
-                    <li>The importance of manual memory management and how to avoid common pitfalls</li>
-                    <li>How the HTTP protocol works at a byte level, not just conceptually</li>
-                    <li>The intricacies of socket programming and network I/O</li>
-                    <li>How to design clean, modular C code for a complex application</li>
+                    <li>Understanding HTTP at a byte level, including the implementation of persistent connections</li>
+                    <li>Mastering memory management techniques for stable, long-running C applications</li>
+                    <li>Building concurrent systems with thread pools to balance performance and resource usage</li>
+                    <li>Developing practical skills in socket programming and efficient network I/O handling</li>
+                    <li>Applying clean code principles and modular design in complex C applications</li>
                 </ul>
             </div>
         </div>

@@ -10,7 +10,7 @@ struct http_response {
     char *body;           // e.g., "Hello, world!"
 };
 
-struct http_response process_response(struct http_request request);
+struct http_response process_response(struct http_request request, char *document_root);
 void free_http_response(struct http_response *resp);
 
 #endif // HTTP_RESPONSE_H

@@ -74,6 +74,24 @@ int accept_client(struct server_config *config, struct sockaddr_storage *client_
     return client_fd;
 }
 
+void *worker_thread(void* args){
+    struct worker_args *wargs = (struct worker_args *)args; // Cast void* to worker_args
+    struct fd_queue *queue = wargs->queue;                // Get queue pointer
+    struct server_config *config = wargs->config;         // Get config pointer
+    while(1){
+        int client_fd = dequeue(queue);
+        printf("Thread %ld handling fd %d\n", pthread_self(), client_fd);
+        int status = handle_connection(config, client_fd);
+        if (status == -1) {
+            printf("Thread %ld: Error handling fd %d\n", pthread_self(), client_fd);
+        } else {
+            printf("Thread %ld: Finished fd %d\n", pthread_self(), client_fd);
+        }
+    }
+
+    return NULL;
+}
+
 char *read_request(int client_fd) {
     int max_size = 16384;
     int initial_size = 2048;
@@ -123,7 +141,7 @@ char *read_request(int client_fd) {
             printf("Total bytes: %d\n", total_bytes);
         }
         else{
-            printf("DEBUG: Read entire request\n");
+            // printf("DEBUG: Read entire request\n");
             break;
         }
         
@@ -148,7 +166,7 @@ int handle_connection(struct server_config *config, int client_fd) {
     int keep_alive = 0;
     do {
         fd_set readfds;
-        struct timeval timeout = { .tv_sec = 15, .tv_usec = 0 };
+        struct timeval timeout = { .tv_sec = TIMEOUT_LENGTH, .tv_usec = 0 };
         FD_ZERO(&readfds);
         FD_SET(client_fd, &readfds);
         int ready = select(client_fd + 1, &readfds, NULL, NULL, &timeout);
@@ -159,7 +177,7 @@ int handle_connection(struct server_config *config, int client_fd) {
             break; // Error, exit loop
         }
         if (ready == 0) {
-            printf("Timeout: No data received in 15 seconds\n");
+            printf("Timeout: No data received in %d seconds\n", TIMEOUT_LENGTH);
             break; // Timeout, exit loop
         }
 
@@ -176,7 +194,6 @@ int handle_connection(struct server_config *config, int client_fd) {
             break;
         }
 
-        printf("Recived request\n");
 
         // Parse the request
         struct http_request parsed_request = parse_request(request);
@@ -185,7 +202,7 @@ int handle_connection(struct server_config *config, int client_fd) {
             const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
             send(client_fd, bad, strlen(bad), 0);
         } else{
-            struct http_response resp = process_response(parsed_request);
+            struct http_response resp = process_response(parsed_request, config->document_root);
             
             // Send HTTP headers first
             char headers[1024];
@@ -208,7 +225,8 @@ int handle_connection(struct server_config *config, int client_fd) {
                 }
             }
             
-            printf("\nDEBUG: Headers sent: %s\n", headers);
+            printf("Sent Response\n");
+            // printf("DEBUG: Headers sent: %s\n", headers);
             keep_alive = parsed_request.keep_alive;
             free_http_response(&resp);
             free_http_request(&parsed_request);
@@ -216,9 +234,51 @@ int handle_connection(struct server_config *config, int client_fd) {
         }
     } while (keep_alive != 0);
     close(client_fd);
-    printf("Connection closed\n");
+    printf("Connection closed\n\n");
     
     return 0;
+}
+
+void enqueue(struct fd_queue *queue, int client_fd) {
+    pthread_mutex_lock(&queue->mutex); // Lock the queue for exclusive access
+
+    // Wait if the queue is full (count == 10)
+    while (queue->count >= 10) {
+        pthread_cond_wait(&queue->not_full, &queue->mutex);
+    }
+
+    // Move rear forward (circularly)
+    queue->rear = (queue->rear + 1) % 10;
+    // Add the client_fd to the queue
+    queue->fds[queue->rear] = client_fd;
+    // Increment the count of items
+    queue->count++;
+
+    // Signal that the queue is not empty (workers can dequeue)
+    pthread_cond_signal(&queue->not_empty);
+    pthread_mutex_unlock(&queue->mutex); // Unlock the queue
+}
+
+int dequeue(struct fd_queue *queue) {
+    pthread_mutex_lock(&queue->mutex); // Lock the queue
+
+    // Wait if the queue is empty (count == 0)
+    while (queue->count <= 0) {
+        pthread_cond_wait(&queue->not_empty, &queue->mutex);
+    }
+
+    // Get the client_fd from the front
+    int client_fd = queue->fds[queue->front];
+    // Move front forward (circularly)
+    queue->front = (queue->front + 1) % 10;
+    // Decrement the count of items
+    queue->count--;
+
+    // Signal that the queue is not full (main can enqueue)
+    pthread_cond_signal(&queue->not_full);
+    pthread_mutex_unlock(&queue->mutex); // Unlock the queue
+
+    return client_fd;
 }
 
 /**

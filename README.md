@@ -18,23 +18,22 @@ Current implementation status:
 
 | Feature | Status |
 |---------|--------|
-| Static File Serving | ✅ Complete |
 | HTTP Request Parsing | ✅ Complete |
+| Static File Serving | ✅ Complete |
 | Memory Management | ✅ Complete |
-| Connection Pooling | 🔄 In Progress |
-| Modular Architecture | 🔄 In Progress |
+| Keep Alive Connections | ✅ Complete |
+| Connection Pooling | ✅ Complete |
 | Basic Security | 🔄 In Progress |
 
 ### Completed Features
 
-- **Static File Serving**: Serves HTML, CSS, JavaScript, and image files from the server's public directory
 - **HTTP Request Parsing**: Correctly parses HTTP headers, methods, and paths according to the HTTP/1.1 specification
+- **Static File Serving**: Serves HTML, CSS, JavaScript, and image files from the server's document directory
 - **Memory Management**: Careful memory allocation and deallocation to prevent leaks in long-running processes
+- **Keep Alive Connections**: Supports persistent connections to reduce the overhead of establishing new TCP connections
+- **Connection Pooling**: Efficiently handles multiple concurrent connections using a thread pool
 
 ### In Progress
-
-- **Connection Pooling**: Efficiently handles multiple concurrent connections using a thread pool
-- **Modular Architecture**: Clean separation of concerns for easier maintenance and extensibility
 - **Basic Security**: Input validation and error handling to prevent common security issues
 
 ## Building and Running
@@ -88,20 +87,21 @@ This project is an ongoing learning experience with the following roadmap:
 2. **Phase 2 (Current)**: Performance Optimization
    - Working on concurrency, connection pooling, and efficient resource utilization
 
-3. **Phase 3 (Planned)**: Advanced Features
-   - Will add support for HTTPS, WebSockets, and more sophisticated routing
+3. **Phase 3 (TBD)**: Advanced Features
+   - Add support for HTTPS, WebSockets, and more sophisticated routing
 
-4. **Phase 4 (Planned)**: Production Readiness
-   - Will focus on reliability, logging, monitoring, and deployment configurations
+4. **Phase 4 (TBD)**: Production Readiness
+   - Focus on reliability, logging, monitoring, and deployment configurations
 
 ## Learning Takeaways
 
 Key insights gained from this project:
 
-- The importance of manual memory management and how to avoid common pitfalls
-- How the HTTP protocol works at a byte level, not just conceptually
-- The intricacies of socket programming and network I/O
-- How to design clean, modular C code for a complex application
+- **Low-level HTTP understanding**: Gained practical knowledge of how the HTTP protocol works at a byte level, including the complexities of implementing persistent connections
+- **Memory management mastery**: Learned the critical importance of careful allocation and deallocation in long-running C applications
+- **Concurrency and performance optimization**: Implemented thread pooling and connection management, providing insights into balancing resource usage with server responsiveness
+- **Socket programming and network I/O**: Developed a deep understanding of network communication fundamentals through hands-on implementation
+- **Modular C programming**: Applied principles of clean code organization and separation of concerns in a complex, multi-featured application
 
 ## License
 
