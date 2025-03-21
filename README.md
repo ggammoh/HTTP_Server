@@ -110,5 +110,5 @@ This project is licensed under the terms of the included LICENSE file.
 ## Acknowledgments
 
 - This project is purely educational and not intended for production use.
-- Inspired by the desire to understand the inner workings of web servers.
+- Inspired by the desire to understand the inner workings of web servers and learn lower-level programming concepts for future systems programming projects
  

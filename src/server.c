@@ -88,7 +88,8 @@ void *worker_thread(void* args){
             printf("Thread %ld: Finished fd %d\n", pthread_self(), client_fd);
         }
     }
-
+    
+    pthread_mutex_unlock(&pool->status_mutex);
     return NULL;
 }
 
@@ -174,7 +175,8 @@ int handle_connection(struct server_config *config, int client_fd) {
         if (ready == -1) {
             perror("select");
             printf("Select error");
-            break; // Error, exit loop
+            close(client_fd); // Explicitly close socket on error
+            return -1; // Return immediately after cleanup
         }
         if (ready == 0) {
             printf("Timeout: No data received in %d seconds\n", TIMEOUT_LENGTH);
@@ -200,6 +202,7 @@ int handle_connection(struct server_config *config, int client_fd) {
 
         if (parsed_request.method == INVALID ) {
             const char *bad = "HTTP/1.1 400 Bad Request\r\n\r\n";
+            free(request);
             send(client_fd, bad, strlen(bad), 0);
         } else{
             struct http_response resp = process_response(parsed_request, config->document_root);
@@ -233,9 +236,9 @@ int handle_connection(struct server_config *config, int client_fd) {
             free(request);
         }
     } while (keep_alive != 0);
+    
     close(client_fd);
     printf("Connection closed\n\n");
-    
     return 0;
 }
 
