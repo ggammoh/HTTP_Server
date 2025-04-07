@@ -36,6 +36,16 @@ Current implementation status:
 ### In Progress
 - **Basic Security**: Input validation and error handling to prevent common security issues
 
+## Learning Takeaways
+
+Key insights gained from this project:
+
+- **Low-level HTTP understanding**: Gained practical knowledge of how the HTTP protocol works at a byte level, including the complexities of implementing persistent connections
+- **Memory management mastery**: Learned the critical importance of careful allocation and deallocation in long-running C applications
+- **Concurrency and performance optimization**: Implemented thread pooling and connection management, providing insights into balancing resource usage with server responsiveness
+- **Socket programming and network I/O**: Developed a deep understanding of network communication fundamentals through hands-on implementation
+- **Modular C programming**: Applied principles of clean code organization and separation of concerns in a complex, multi-featured application
+
 ## Building and Running
 
 ### Prerequisites
@@ -84,7 +94,7 @@ This project is an ongoing learning experience with the following roadmap:
 1. **Phase 1 (Completed)**: Basic HTTP Server
    - Implemented socket programming, basic request handling, and response generation
 
-2. **Phase 2 (Current)**: Performance Optimization
+2. **Phase 2 (Completed)**: Performance Optimization
    - Working on concurrency, connection pooling, and efficient resource utilization
 
 3. **Phase 3 (TBD)**: Advanced Features
@@ -93,15 +103,6 @@ This project is an ongoing learning experience with the following roadmap:
 4. **Phase 4 (TBD)**: Production Readiness
    - Focus on reliability, logging, monitoring, and deployment configurations
 
-## Learning Takeaways
-
-Key insights gained from this project:
-
-- **Low-level HTTP understanding**: Gained practical knowledge of how the HTTP protocol works at a byte level, including the complexities of implementing persistent connections
-- **Memory management mastery**: Learned the critical importance of careful allocation and deallocation in long-running C applications
-- **Concurrency and performance optimization**: Implemented thread pooling and connection management, providing insights into balancing resource usage with server responsiveness
-- **Socket programming and network I/O**: Developed a deep understanding of network communication fundamentals through hands-on implementation
-- **Modular C programming**: Applied principles of clean code organization and separation of concerns in a complex, multi-featured application
 
 ## License
 
