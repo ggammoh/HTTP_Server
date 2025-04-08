@@ -96,11 +96,11 @@ This project is an ongoing learning experience with the following roadmap:
 
 2. **Phase 2 (Completed)**: Performance Optimization
    - Working on concurrency, connection pooling, and efficient resource utilization
-
-3. **Phase 3 (TBD)**: Advanced Features
+### Potential Next Steps
+1. **Phase 3 (TBD)**: Advanced Features
    - Add support for HTTPS, WebSockets, and more sophisticated routing
 
-4. **Phase 4 (TBD)**: Production Readiness
+2. **Phase 4 (TBD)**: Production Readiness
    - Focus on reliability, logging, monitoring, and deployment configurations
 
 
